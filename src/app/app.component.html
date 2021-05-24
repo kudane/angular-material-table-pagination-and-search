@@ -1,3 +1,50 @@
-<p>
-  Start editing to see some magic happen :)
-</p>
+<section>
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input matInput #input placeholder="Ex. Mia">
+  </mat-form-field>
+
+  <button mat-raised-button (click)="tableControl.search(input.value)">Search</button>
+</section>
+
+
+<section>
+  <table mat-table [dataSource]="tableControl.data" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+  
+    <!-- Position Column -->
+    <ng-container matColumnDef="position">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+    </ng-container>
+  
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+  
+    <!-- Weight Column -->
+    <ng-container matColumnDef="weight">
+      <th mat-header-cell *matHeaderCellDef> Weight </th>
+      <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+    </ng-container>
+  
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="symbol">
+      <th mat-header-cell *matHeaderCellDef> Symbol </th>
+      <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
+    </ng-container>
+  
+    <tr mat-header-row *matHeaderRowDef="tableControl.columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: tableControl.columns;"></tr>
+  </table>
+
+  <mat-paginator [length]="tableControl.totalCount" [pageSizeOptions]="[2, 5, 10]"></mat-paginator>
+</section>
+
+<!-- Copyright 2021 Google LLC. All Rights Reserved.
+    Use of this source code is governed by an MIT-style license that
+    can be found in the LICENSE file at http://angular.io/license -->
