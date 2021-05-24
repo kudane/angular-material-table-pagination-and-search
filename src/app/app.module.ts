@@ -5,9 +5,15 @@ import { MaterialModule } from './material.module';
 import { SharedModule } from './shared.module';
 
 import { AppComponent } from './app.component';
+import { BrowserModule } from '@angular/platform-browser';
 
 @NgModule({
-  imports: [BrowserAnimationsModule, SharedModule, MaterialModule],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    SharedModule,
+    MaterialModule
+  ],
   declarations: [AppComponent],
   bootstrap: [AppComponent]
 })
