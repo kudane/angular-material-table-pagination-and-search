@@ -54,7 +54,7 @@ class TableControl {
     ])
       .pipe(
         // log ดูข้อมูล
-        tap(([page, search]) => console.log(page, search)),
+        tap(([page, search]) => console.log({ page, search })),
         // unsubscribe ที่ combineLatest แล้ว
         // เปลี่ยนไป get data จาก service
         switchMap(() => {
