@@ -6,13 +6,13 @@
     <input matInput #input placeholder="Name" />
   </mat-form-field>
 
-  <button mat-raised-button (click)="tableControl?.search(input.value)">
+  <button mat-raised-button (click)="tableControl.search(input.value)">
     Search
   </button>
 </section>
 
 <section>
-  <table mat-table [dataSource]="tableControl?.data">
+  <table mat-table [dataSource]="tableControl.dataSource">
     <!--- Note that these columns can be defined in any order.
           The actual rendered columns are set as a property on the row definition" -->
 
@@ -41,13 +41,10 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="tableControl?.columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: tableControl?.columns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: tableControl.columns;"></tr>
   </table>
 
-  <mat-paginator
-    [length]="tableControl?.totalCount"
-    [pageSizeOptions]="[2, 5, 10]"
-  ></mat-paginator>
+  <mat-paginator [length]="tableControl.totalCount" [pageSizeOptions]="[2, 5, 10]"></mat-paginator>
 </section>
 
 <!-- Copyright 2021 Google LLC. All Rights Reserved.

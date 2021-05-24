@@ -2,53 +2,68 @@ import {
   AfterViewInit,
   Component,
   OnDestroy,
-  OnInit,
   ViewChild
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { combineLatest, Subscription } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { delay, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { PeriodicService } from './periodic.service';
 import { PeriodicItem } from './periodic.model';
 
 class TableControl {
   private _subscriptions$: Subscription;
-
-  // for get data
   private _periodicService: PeriodicService;
 
-  // for search
-  private _textControl = new FormControl('');
-
-  // for table
   public readonly columns = ['position', 'name', 'weight', 'symbol'];
+  private  _textControl = new FormControl('');
   private _paginator: MatPaginator;
   private _totalCount: number = 0;
   private _dataSource: PeriodicItem[] = [];
-  public get data() {
+
+  public set periodicService(periodicService: PeriodicService) {
+    this._periodicService = periodicService;
+  }
+
+  public set paginator(paginator: MatPaginator) {
+    this._paginator = paginator;
+  }
+
+  public get dataSource() {
     return this._dataSource;
   }
+
   public get totalCount() {
     return this._totalCount;
   }
 
-  constructor(dataService: PeriodicService, paginator: MatPaginator) {
-    this._periodicService = dataService;
-    this._paginator = paginator;
-  }
-
-  public watchSearch(): void {
+  public makeAllReady() {
     if (!this._paginator) {
       throw new Error('paginator is null, please set in ngAfterViewInit');
     }
 
+    if (!this._periodicService) {
+      throw new Error(
+        'periodic service is null, please set in constructor'
+      );
+    }
+  }
+
+  public watch(): void {
+    // เช็ค DI มีค่าพร้อมใช้งาน
+    this.makeAllReady();
+
     // Array ของ Observable เมื่อ search หรือ page เปลี่ยนแปลง
     // เพิ่ม startWith สำหรับ initial data หรือ ทำให้เกิดการ call service ครั้งแรก เพราะ
     // combineLatest จะปล่อยค่าออกมา เมื่อ Observable ใน Array มีการปล่อยค่าออกมาทุกตัว
+    // delay(0) คือ fix error NG0100: ExpressionChangedAfterItHasBeenCheckedError
     this._subscriptions$ = combineLatest([
       this._paginator.page.pipe(
-        startWith({ length: 0, pageIndex: 0, pageSize: 2 } as PageEvent)
+        startWith({
+          pageIndex: this._paginator.pageIndex,
+          pageSize: this._paginator.pageSize
+        }),
+        delay(0)
       ),
       this._textControl.valueChanges.pipe(startWith(''))
     ])
@@ -80,7 +95,7 @@ class TableControl {
   }
 
   public destroy(): void {
-    this._subscriptions$.unsubscribe();
+    this._subscriptions$?.unsubscribe();
     this._dataSource = null;
     this._paginator = null;
     this._textControl = null;
@@ -93,17 +108,29 @@ class TableControl {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements AfterViewInit, OnDestroy {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  tableControl: TableControl;
+  @ViewChild(MatPaginator)
+  set paginator(paginator: MatPaginator) {
+    // เพิ่ม DI paginator
+    this.tableControl.paginator = paginator;
+  }
 
-  constructor(private periodicService: PeriodicService) {}
+  tableControl = new TableControl();
+
+  constructor(periodicService: PeriodicService) {
+    // เพิ่ม DI PeriodicService
+    this.tableControl.periodicService = periodicService;
+  }
 
   ngAfterViewInit(): void {
-    this.tableControl = new TableControl(this.periodicService, this.paginator);
-    this.tableControl.watchSearch();
+    // เช็ค DI มีค่าทั้งหมด ป้องกัน DI null
+    this.tableControl.makeAllReady();
+
+    // เมื่อ [กดค้นหา] หรือ [เปลี่ยนหน้า] จะ get data อัตโนมัติ
+    this.tableControl.watch();
   }
 
   ngOnDestroy(): void {
+    // ลบ resource ที่ใช้ทิ้ง
     this.tableControl.destroy();
   }
 }
