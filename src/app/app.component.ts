@@ -50,7 +50,7 @@ class TableControl {
   }
 
   public watch(): void {
-    // เช็ค DI มีค่าพร้อมใช้งาน
+    // เช็ค DI มีค่าทั้งหมด ป้องกัน DI null
     this.makeAllReady();
 
     // Array ของ Observable เมื่อ search หรือ page เปลี่ยนแปลง
@@ -122,9 +122,6 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    // เช็ค DI มีค่าทั้งหมด ป้องกัน DI null
-    this.tableControl.makeAllReady();
-
     // เมื่อ [กดค้นหา] หรือ [เปลี่ยนหน้า] จะ get data อัตโนมัติ
     this.tableControl.watch();
   }
