@@ -30,7 +30,9 @@ export class MockDataService {
     let query = this._mockItems;
 
     if (seachText) {
-      query = query.filter(a => a.name.includes(seachText));
+      query = query.filter(a =>
+        a.name.toLocaleLowerCase().includes(seachText.toLocaleLowerCase())
+      );
     }
 
     const totalCount = query.length;
