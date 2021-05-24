@@ -1,7 +1,9 @@
+<h2 style="text-align: center;">Demo Periodic</h2>
+
 <section>
   <mat-form-field>
-    <mat-label>Filter</mat-label>
-    <input matInput #input placeholder="Search: Name" />
+    <mat-label>Search</mat-label>
+    <input matInput #input placeholder="Name" />
   </mat-form-field>
 
   <button mat-raised-button (click)="tableControl?.search(input.value)">
