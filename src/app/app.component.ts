@@ -16,7 +16,7 @@ class TableControl {
   private _subscriptions$: Subscription;
 
   // for get data
-  private _dataService: PeriodicService;
+  private _periodicService: PeriodicService;
 
   // for search
   private _textControl = new FormControl('');
@@ -34,7 +34,7 @@ class TableControl {
   }
 
   constructor(dataService: PeriodicService, paginator: MatPaginator) {
-    this._dataService = dataService;
+    this._periodicService = dataService;
     this._paginator = paginator;
   }
 
@@ -58,7 +58,7 @@ class TableControl {
         // unsubscribe ที่ combineLatest แล้ว
         // เปลี่ยนไป get data จาก service
         switchMap(() => {
-          return this._dataService.getItemsWithPagination(
+          return this._periodicService.getItemsWithPagination(
             this._textControl.value,
             this._paginator.pageSize,
             this._paginator.pageIndex
@@ -96,10 +96,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   tableControl: TableControl;
 
-  constructor(private dataService: PeriodicService) {}
+  constructor(private periodicService: PeriodicService) {}
 
   ngAfterViewInit(): void {
-    this.tableControl = new TableControl(this.dataService, this.paginator);
+    this.tableControl = new TableControl(this.periodicService, this.paginator);
     this.tableControl.watchSearch();
   }
 
