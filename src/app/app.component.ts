@@ -9,14 +9,14 @@ import { FormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { combineLatest, Subscription } from 'rxjs';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
-import { MockDataService } from './mock-data.service';
-import { PeriodicItem } from './mock.model';
+import { PeriodicService } from './periodic.service';
+import { PeriodicItem } from './periodic.model';
 
 class TableControl {
   private _subscriptions$: Subscription;
 
   // for get data
-  private _dataService: MockDataService;
+  private _dataService: PeriodicService;
 
   // for search
   private _textControl = new FormControl('');
@@ -33,7 +33,7 @@ class TableControl {
     return this._totalCount;
   }
 
-  constructor(dataService: MockDataService, paginator: MatPaginator) {
+  constructor(dataService: PeriodicService, paginator: MatPaginator) {
     this._dataService = dataService;
     this._paginator = paginator;
   }
@@ -96,7 +96,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   tableControl: TableControl;
 
-  constructor(private dataService: MockDataService) {}
+  constructor(private dataService: PeriodicService) {}
 
   ngAfterViewInit(): void {
     this.tableControl = new TableControl(this.dataService, this.paginator);

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { of, Observable } from 'rxjs';
-import { PeriodicItem } from './mock.model';
+import { PeriodicItem } from './periodic.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class MockDataService {
+export class PeriodicService {
   private _mockItems: PeriodicItem[] = [
     { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
     { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
