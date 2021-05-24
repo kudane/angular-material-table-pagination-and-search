@@ -14,6 +14,7 @@ import { PeriodicItem } from './mock.model';
 
 class TableControl {
   private _subscriptions$: Subscription;
+
   // for get data
   private _dataService: MockDataService;
 
@@ -37,7 +38,7 @@ class TableControl {
     this._paginator = paginator;
   }
 
-  public watchSearch() {
+  public watchSearch(): void {
     if (!this._paginator) {
       throw new Error('paginator is null, please set in ngAfterViewInit');
     }
@@ -72,13 +73,13 @@ class TableControl {
       .subscribe((items: PeriodicItem[]) => (this._dataSource = items));
   }
 
-  public search(text: string) {
+  public search(text: string): void {
     // reset to first page
     this._paginator.pageIndex = 0;
     this._textControl.setValue(text);
   }
 
-  public destroy() {
+  public destroy(): void {
     this._subscriptions$.unsubscribe();
     this._dataSource = null;
     this._paginator = null;
