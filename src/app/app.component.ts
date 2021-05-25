@@ -15,13 +15,15 @@ import { MatSort } from '@angular/material/sort';
 class TableControl {
   private _subscriptions$: Subscription;
   private _periodicService: PeriodicService;
-
   public readonly columns = ['position', 'name', 'weight', 'symbol'];
   private  _textControl = new FormControl('');
   private _paginator: MatPaginator;
   private _sort: MatSort;
   private _totalCount: number = 0;
   private _dataSource: PeriodicItem[] = [];
+  private _isLoadingResults = false;
+  private _isError = false;
+
 
   public set periodicService(periodicService: PeriodicService) {
     this._periodicService = periodicService;
@@ -43,14 +45,22 @@ class TableControl {
     return this._totalCount;
   }
 
+  public get isLoadingResults() {
+    return this._isLoadingResults;
+  }
+
+  public get isError() {
+    return this._isError;
+  }
+
   public makeAllReady() {
     if (!this._paginator) {
       throw new Error('paginator is null, please set in ngAfterViewInit');
     }
 
-    if (!this._sort) {
-      throw new Error('sort is null, please set in ngAfterViewInit');
-    }
+    // if (!this._sort) {
+    //   throw new Error('sort is null, please set in ngAfterViewInit');
+    // }
 
     if (!this._periodicService) {
       throw new Error(
@@ -83,6 +93,8 @@ class TableControl {
         // unsubscribe ที่ combineLatest แล้ว
         // เปลี่ยนไป get data จาก service
         switchMap(() => {
+          this._isLoadingResults = true;
+
           return this._periodicService.getItemsWithPagination(
             this._textControl.value,
             this._paginator.pageSize,
@@ -91,6 +103,7 @@ class TableControl {
         }),
         // อัพเดท total count และ ปล่อยค่าเฉพาะ items
         map(({ items, totalCount }) => {
+          this._isLoadingResults = false;
           this._totalCount = totalCount;
           return items;
         })

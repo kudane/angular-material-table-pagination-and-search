@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { of, Observable, throwError } from 'rxjs';
-import { catchError, delay } from 'rxjs/operators';
+import { catchError, delay, mapTo } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
 import { PeriodicItem } from './periodic.model';
 
@@ -30,7 +30,7 @@ export class PeriodicService {
     items: PeriodicItem[];
   }> {
     if (pageIndex === 3) {
-      this.fakeError();
+      return this.fakeError();
     }
 
     let query = this._mockItems;
@@ -45,12 +45,20 @@ export class PeriodicService {
     const items = query.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
 
     return of({ totalCount, items }).pipe(
-      catchError(throwError),
+      catchError(error => {
+        console.error(error);
+        return throwError(error);
+      }),
       delay(350)
     );
   }
 
   private fakeError() {
-    return ajax('www.api.fake.error.com');
+    const source = throwError('This is an error!');
+    return source.pipe(
+      catchError(error => {
+        return throwError(error);
+      })
+    );
   }
 }
