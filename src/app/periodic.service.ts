@@ -57,6 +57,7 @@ export class PeriodicService {
     const source = throwError('This is an error!');
     return source.pipe(
       catchError(error => {
+        console.error(error);
         return throwError(error);
       })
     );

@@ -6,8 +6,8 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
-import { combineLatest, Subscription } from 'rxjs';
-import { delay, map, startWith, switchMap, tap } from 'rxjs/operators';
+import { combineLatest, Subscription, of } from 'rxjs';
+import { catchError, delay, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { PeriodicService } from './periodic.service';
 import { PeriodicItem } from './periodic.model';
 import { MatSort } from '@angular/material/sort';
@@ -99,6 +99,10 @@ class TableControl {
             this._textControl.value,
             this._paginator.pageSize,
             this._paginator.pageIndex
+          ).pipe(
+            catchError(error => {
+              return of({items: [], totalCount: this._totalCount });
+            })
           );
         }),
         // อัพเดท total count และ ปล่อยค่าเฉพาะ items
