@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { of, Observable } from 'rxjs';
+import { of, Observable, throwError } from 'rxjs';
+import { catchError, delay } from 'rxjs/operators';
 import { PeriodicItem } from './periodic.model';
 
 @Injectable({
@@ -38,9 +39,9 @@ export class PeriodicService {
     const totalCount = query.length;
     const items = query.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
 
-    return of({
-      totalCount,
-      items
-    });
+    return of({ totalCount, items }).pipe(
+      catchError(throwError),
+      delay(350)
+    );
   }
 }

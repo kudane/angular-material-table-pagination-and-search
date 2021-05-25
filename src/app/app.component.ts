@@ -10,6 +10,7 @@ import { combineLatest, Subscription } from 'rxjs';
 import { delay, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { PeriodicService } from './periodic.service';
 import { PeriodicItem } from './periodic.model';
+import { MatSort } from '@angular/material/sort';
 
 class TableControl {
   private _subscriptions$: Subscription;
@@ -18,6 +19,7 @@ class TableControl {
   public readonly columns = ['position', 'name', 'weight', 'symbol'];
   private  _textControl = new FormControl('');
   private _paginator: MatPaginator;
+  private _sort: MatSort;
   private _totalCount: number = 0;
   private _dataSource: PeriodicItem[] = [];
 
@@ -27,6 +29,10 @@ class TableControl {
 
   public set paginator(paginator: MatPaginator) {
     this._paginator = paginator;
+  }
+
+  public set sort(sort: MatSort) {
+    this._sort = sort;
   }
 
   public get dataSource() {
@@ -40,6 +46,10 @@ class TableControl {
   public makeAllReady() {
     if (!this._paginator) {
       throw new Error('paginator is null, please set in ngAfterViewInit');
+    }
+
+    if (!this._sort) {
+      throw new Error('sort is null, please set in ngAfterViewInit');
     }
 
     if (!this._periodicService) {
@@ -110,8 +120,12 @@ class TableControl {
 export class AppComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator)
   set paginator(paginator: MatPaginator) {
-    // เพิ่ม DI paginator
     this.tableControl.paginator = paginator;
+  }
+  
+  @ViewChild(MatSort)
+  set sort(sort: MatSort) {
+    this.tableControl.sort = sort;
   }
 
   tableControl = new TableControl();
