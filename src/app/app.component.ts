@@ -92,7 +92,9 @@ class TableControl {
         tap(([page, search]) => console.log({ page, search })),
         // unsubscribe ที่ combineLatest แล้ว
         // เปลี่ยนไป get data จาก service
+        // catchError ใน switchMap ป้องกัน combineLatest พังทั้งเส้น
         switchMap(() => {
+          this._isError = false;;
           this._isLoadingResults = true;
 
           return this._periodicService.getItemsWithPagination(
@@ -100,7 +102,8 @@ class TableControl {
             this._paginator.pageSize,
             this._paginator.pageIndex
           ).pipe(
-            catchError(error => {
+            catchError(() => {
+              this._isError = true;
               return of({items: [], totalCount: this._totalCount });
             })
           );
