@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { of, Observable, throwError } from 'rxjs';
-import { catchError, delay, mapTo } from 'rxjs/operators';
-import { ajax } from 'rxjs/ajax';
+import { catchError, delay } from 'rxjs/operators';
 import { PeriodicItem } from './periodic.model';
 
 @Injectable({
@@ -44,6 +43,8 @@ export class PeriodicService {
     }
 
     const totalCount = query.length;
+
+    // fix search asc, desc
     let items = query.sort(function(a, b) {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
       const nameA = a[sortColumn].toUpperCase();
@@ -58,6 +59,13 @@ export class PeriodicService {
     }
 
     items = items.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+
+    // fix row number
+    let startNo = pageSize * pageIndex + 1;
+    for (let item of items) {
+      item.no = startNo;
+      startNo++;
+    }
 
     return of({ totalCount, items }).pipe(
       catchError(error => {
