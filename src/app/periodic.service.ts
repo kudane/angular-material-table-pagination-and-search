@@ -30,13 +30,7 @@ export class PeriodicService {
     items: PeriodicItem[];
   }> {
     if (pageIndex === 3) {
-      return ajax('www.api.fake.error.com').pipe(
-        delay(350),
-        catchError(error => {
-          console.error(error);
-          return throwError(error);
-        })
-      );
+      this.fakeError();
     }
 
     let query = this._mockItems;
@@ -54,5 +48,9 @@ export class PeriodicService {
       catchError(throwError),
       delay(350)
     );
+  }
+
+  private fakeError() {
+    return ajax('www.api.fake.error.com');
   }
 }

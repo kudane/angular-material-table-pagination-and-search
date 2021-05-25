@@ -131,7 +131,6 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   tableControl = new TableControl();
 
   constructor(periodicService: PeriodicService) {
-    // เพิ่ม DI PeriodicService
     this.tableControl.periodicService = periodicService;
   }
 
