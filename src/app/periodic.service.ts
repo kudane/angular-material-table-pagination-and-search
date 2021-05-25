@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { of, Observable, throwError } from 'rxjs';
 import { catchError, delay } from 'rxjs/operators';
+import { ajax } from 'rxjs/ajax';
 import { PeriodicItem } from './periodic.model';
 
 @Injectable({
@@ -28,6 +29,16 @@ export class PeriodicService {
     totalCount: number;
     items: PeriodicItem[];
   }> {
+    if (pageIndex === 3) {
+      return ajax('www.api.fake.error.com').pipe(
+        delay(350),
+        catchError(error => {
+          console.error(error);
+          return throwError(error);
+        })
+      );
+    }
+
     let query = this._mockItems;
 
     if (seachText) {
