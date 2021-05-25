@@ -6,16 +6,16 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort} from '@angular/material/sort';
 import { combineLatest, Subscription, of } from 'rxjs';
 import { catchError, delay, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { PeriodicService } from './periodic.service';
 import { PeriodicItem } from './periodic.model';
-import { MatSort } from '@angular/material/sort';
 
 class TableControl {
   private _subscriptions$: Subscription;
   private _periodicService: PeriodicService;
-  public readonly columns = ['position', 'name', 'weight', 'symbol'];
+  public readonly columns = ['no', 'name', 'weight', 'symbol'];
   private  _textControl = new FormControl('');
   private _paginator: MatPaginator;
   private _sort: MatSort;
@@ -58,9 +58,9 @@ class TableControl {
       throw new Error('paginator is null, please set in ngAfterViewInit');
     }
 
-    // if (!this._sort) {
-    //   throw new Error('sort is null, please set in ngAfterViewInit');
-    // }
+    if (!this._sort) {
+      throw new Error('sort is null, please set in ngAfterViewInit');
+    }
 
     if (!this._periodicService) {
       throw new Error(
@@ -78,18 +78,16 @@ class TableControl {
     // combineLatest จะปล่อยค่าออกมา เมื่อ Observable ใน Array มีการปล่อยค่าออกมาทุกตัว
     // delay(0) คือ fix error NG0100: ExpressionChangedAfterItHasBeenCheckedError
     this._subscriptions$ = combineLatest([
+      this._sort.sortChange.pipe(
+        startWith({}),
+        delay(0)
+      ),
       this._paginator.page.pipe(
-        startWith({
-          pageIndex: this._paginator.pageIndex,
-          pageSize: this._paginator.pageSize
-        }),
+        startWith({}),
         delay(0)
       ),
       this._textControl.valueChanges.pipe(startWith(''))
-    ])
-      .pipe(
-        // log ดูข้อมูล
-        tap(([page, search]) => console.log({ page, search })),
+    ]).pipe(
         // unsubscribe ที่ combineLatest แล้ว
         // เปลี่ยนไป get data จาก service
         // catchError ใน switchMap ป้องกัน combineLatest พังทั้งเส้น
@@ -100,7 +98,9 @@ class TableControl {
           return this._periodicService.getItemsWithPagination(
             this._textControl.value,
             this._paginator.pageSize,
-            this._paginator.pageIndex
+            this._paginator.pageIndex,
+            this._sort.active,
+            this._sort.direction
           ).pipe(
             catchError(() => {
               this._isError = true;
